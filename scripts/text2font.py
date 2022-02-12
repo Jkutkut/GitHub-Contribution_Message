@@ -67,7 +67,7 @@ class Text2font:
 		return True
 
 	@staticmethod
-	def text2font(text: str, font_path_name: str) -> str:
+	def text2font(text: str, font_path_name: str, debugPrint: bool = False) -> str:
 		"""
 		Attempts to convert the given text to the representation using the font_file.
 
@@ -76,7 +76,8 @@ class Text2font:
 		font = Text2font.loadJSON(font_path_name)
 		if font is None:
 			return None
-		print(f"{font['details']['name']} loaded.")
+		if debugPrint:
+			print(f"{font['details']['name']} loaded.")
 		str = ["" for i in range(font['details']['height'])]
 		for char in text:
 			f = font['font'][char] if font['font'].get(char) else font['font']['default']
