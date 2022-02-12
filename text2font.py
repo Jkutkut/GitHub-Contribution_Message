@@ -49,7 +49,23 @@ class Text2font:
 			print(f"Invalid JSON file: {e}")
 			file.close()
 			return False
-		
+		for key in ("details", "font"):
+			if not key in jsonObj:
+				print(f"Invalid JSON file: Missing key: {key}")
+				file.close()
+				return False
+		# Check details
+		for key in ("name", "maxHeight", "maxWidth"):
+			if not key in jsonObj["details"]:
+				print(f"Invalid JSON file: Missing key: {key}")
+				file.close()
+				return False
+		# Check font
+		for key in ["default"]:
+			if not key in jsonObj["font"]:
+				print(f"Invalid JSON file: Missing key: {key}")
+				file.close()
+				return False
 		return True
 
 	@staticmethod
