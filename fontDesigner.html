@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Designer</title>
+</head>
+<body>
+    <main>
+        <div id="mainInfo">
+            <h2>Font factory</h2>
+            <p>Left click to intensify the color of a day.</p>
+            <p>Right click to lower the intensity of a day.</p>
+            <p>Click 'Generate' to generate the JSON of that symbol.</p><br/>
+            <label>Default intensity: </label> <input id="defaultIntensity" type="number" value="4", min="1", max="4" /><br/>
+            <label>Erase gradually?: </label>  <input id="eraseGradually" type="checkbox" checked /> <br/>
+            <label>Change column count: </label> <input type="range" id="slider" value="25" min="1" max="52" step="1" /> <b id="columnCount">25</b>
+        </div>
+        <div id="matrix"></div>
+        <div id="output">
+            <div class="info">
+                <p>Output</p>
+                <div class="button">Generate</div>
+            </div>
+            <div class="textarea"></div>
+        </div>
+    </main>
+    <script>
+        var COL_COUNT = 25;
+
+        const updateColumnCount = (event) =>
+        {
+            let newValue = parseInt(event.target.value);
+            let rows = document.querySelectorAll("#matrix .row");
+            for (let i = 0; i < rows.length; i++)
+            {
+                if (newValue > COL_COUNT)
+                {
+                    while (rows[i].children.length != newValue)
+                   { 
+                        let day = document.createElement("div");
+                        day.classList.add("day");
+                        day.dataset["intensity"] = 0;
+                        day.addEventListener("click", addDayColor);
+                        day.addEventListener("contextmenu", reduceDayColor);
+                        rows[i].appendChild(day);
+                    }
+                }
+                else if (newValue < COL_COUNT)
+                {
+                    while (rows[i].children.length != newValue)
+                        console.log(rows[i].lastChild.remove());
+                }
+            }
+            COL_COUNT = newValue;
+            document.querySelector("#columnCount").textContent = newValue;
+            document.body.style.setProperty("--col-count", COL_COUNT);
+        }
+        document.querySelector("#slider").addEventListener("input", updateColumnCount);
+
+        const addDayColor = (event) => {
+            let day = event.target;
+            let intensity = parseInt(day.dataset["intensity"]);
+            console.log(day, intensity);
+            if (intensity == 0)
+                day.dataset["intensity"] = parseInt(document.querySelector("#defaultIntensity").value);
+            else
+                day.dataset["intensity"] = (intensity < 4) ? intensity + 1 : 4;
+        }
+
+        const reduceDayColor = (event) => {
+            event.preventDefault();
+            console.log(event);
+            let day = event.target;
+            let intensity = parseInt(day.dataset["intensity"]);
+            if (!document.querySelector("#eraseGradually").checked)
+                day.dataset["intensity"] = 0;
+            else
+                day.dataset["intensity"] = (intensity > 0) ? intensity - 1 : 0;
+        }
+
+        const matrix = document.querySelector("#matrix");
+        for (let i = 0; i < 7; i++)
+        {
+            let row = document.createElement("div");
+            row.classList.add("row");
+            for (let j = 0; j < 25; j++)
+            {
+                let day = document.createElement("div");
+                day.classList.add("day");
+                day.dataset["intensity"] = 0;
+                day.addEventListener("click", addDayColor);
+                day.addEventListener("contextmenu", reduceDayColor);
+                row.appendChild(day);
+            }
+            matrix.appendChild(row);
+        }
+        matrix.addEventListener("contextmenu", (event) => event.preventDefault());
+
+        const generateJSON = () => {
+            const rows = [...document.querySelectorAll("#matrix .row")];
+            let days = rows.map((row) => [...row.children].map(day => day.dataset["intensity"]));
+            days = days.map((value) => (value == null) ? 0 : value);
+
+            const json = JSON.stringify(days);
+            const output = document.querySelector("#output .textarea").textContent = json;
+        }
+        document.querySelector("#output .button").addEventListener("click", generateJSON);
+    </script>
+    <style>
+        body {
+            color: #C9D1D9;
+            font-family: sans-serif;
+            background: #0D1117;
+            user-select: none;
+            margin: 0 12%;
+            --col-count: 25;
+        }
+
+        main {
+            /*position: absolute;
+            left: 50%;
+            transform: translateX(-50%);*/
+            margin-top: 50px;
+        }
+
+        main #mainInfo p
+        {
+            opacity: .75;
+            line-height: 10px;
+        }
+
+        #matrix {
+            margin: 50px 0;
+        }
+
+        .row {
+            height: 21px;
+            width: calc(var(--col-count) * 21px);
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .day {
+            background: #161B22;
+            width: 15px;
+            height: 15px;
+            margin: 3px;
+            border-radius: 2px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        #output .info {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        #output p {
+            font-size: 16px;
+            font-weight: bold;
+            transform: translateY(-3px);
+        }
+
+        /*#output */div.button {
+            font-size: 16px;
+            outline: none;
+            border: none;
+            padding: 10px 15px;
+            background: #1F6FEB;
+            border-radius: 10px;
+            color: #C9D1D9;
+            position: absolute;
+            right: 0px;
+        }
+
+        #output div.button:hover {
+            opacity: .65;
+            cursor: pointer;
+            transition: opacity .5s ease;
+        }
+
+        #output .textarea:empty {
+            opacity: 0;
+        }
+
+        #output .textarea {
+            border: 1px solid #4d5358;
+            border-radius: 10px;
+            max-height: 100px;
+            min-width: 35vw;
+            padding: 10px 15px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: monospace;
+            font-size: 10px;
+            overflow: scroll;
+            user-select: all;
+        }
+
+        .day[data-intensity='0'] { background: #161B22; }
+        .day[data-intensity='1'] { background: #0E4429; }
+        .day[data-intensity='2'] { background: #006D32; }
+        .day[data-intensity='3'] { background: #26A641; }
+        .day[data-intensity='4'] { background: #39D353; }
+
+        #slider {
+            width: 250px;
+        }
+    </style>
+</body>
+</html>
