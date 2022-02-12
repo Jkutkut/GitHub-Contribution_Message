@@ -25,22 +25,24 @@ class Text2font:
 
 		If the file does not exist, it returns None.
 		"""
-		file = Text2font.readFile(fileName)
-		if not Text2font.isValidJSON(file):
+		if not Text2font.isValidJSON(fileName):
 			return None
-		else:
-			jsonObj = json.load(file)
-			file.close()
-			return jsonObj
+
+		file = Text2font.readFile(fileName)
+		jsonObj = json.load(file)
+		file.close()
+
+		print(jsonObj)
+		return None
 
 	@staticmethod
-	def isValidJSON(file: TextIOWrapper) -> bool:
+	def isValidJSON(fileName: str) -> bool:
 		'''
-		TODO - Check if the file is a valid JSON file.
+		TODO - Check if the file is a valid JSON-font file.
 		'''
+		file = Text2font.readFile(fileName)
 		if file is None or file.closed or not file.readable():
 			return False
-		
 		try:
 			jsonObj = json.load(file)
 		except json.decoder.JSONDecodeError as e:
