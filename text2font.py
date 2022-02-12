@@ -11,7 +11,7 @@ class Text2font:
 		If the file does not exist, it returns None.
 		"""
 		try:
-			file = open(fileName, "r")
+			file = open(fileName)
 		except FileNotFoundError:
 			print("File not found: " + fileName)
 			file = None
@@ -26,7 +26,7 @@ class Text2font:
 		If the file does not exist, it returns None.
 		"""
 		file = Text2font.readFile(fileName)
-		if file is None or file.closed or not Text2font.isValidJSON(file):
+		if not Text2font.isValidJSON(file):
 			return None
 		else:
 			jsonObj = json.load(file)
@@ -38,6 +38,16 @@ class Text2font:
 		'''
 		TODO - Check if the file is a valid JSON file.
 		'''
+		if file is None or file.closed or not file.readable():
+			return False
+		
+		try:
+			jsonObj = json.load(file)
+		except json.decoder.JSONDecodeError as e:
+			print(f"Invalid JSON file: {e}")
+			file.close()
+			return False
+		
 		return True
 
 	@staticmethod
@@ -61,6 +71,7 @@ if __name__ == "__main__":
 
 	fonts = [ # Fonts to tests
 		"./fonts/invalid.json",
+		"./fonts/invalid_font.json",
 		"./fonts/py_basic_font.json"
 	]
 
