@@ -9,4 +9,3 @@
 
 # Ideas:
 - [ ] Script to move all commits of user to non visible date (to hide them).
-- [ ] 
