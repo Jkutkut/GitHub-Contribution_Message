@@ -1,3 +1,5 @@
+#!/bin/env python3
+
 import sys # To have control of the system
 import json # To parse the json file
 from io import TextIOWrapper # The object type of files

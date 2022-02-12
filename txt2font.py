@@ -1,3 +1,5 @@
+#!/bin/env python3
+
 if not __name__ == '__main__':
 	print("This file is not meant to be imported.")
 	exit()
