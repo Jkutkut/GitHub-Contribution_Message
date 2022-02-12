@@ -12,3 +12,10 @@
 
 # Ideas:
 - [ ] Script to move all commits of user to non visible date (to hide them).
+- [ ] Web:
+  - [ ] Have 3 modes:
+    - [ ] Free mode (to draw custom shapes, current)
+    - [ ] Text mode (using a given font)
+    - [ ] Font creation mode.
+  - [ ] Be able to change the intensity of a pixel using the mouse wheel.
+  - [ ] Have a copy button next to the generated output to copy to clipboard.
