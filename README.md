@@ -20,5 +20,4 @@
 
 			python3 ./txt2font.py "abba bbaabb"
 
-		- Result:
-			![abba_bbaabb.png](./res/img/abba_bbaabb.png)
+		![abba_bbaabb.png](./res/img/abba_bbaabb.png)
