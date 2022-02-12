@@ -7,6 +7,7 @@ from scripts.text2font import *
 text: str = ""
 font: str = "./fonts/py_basic_font.json"
 format: bool = True
+debugPrint: bool = False
 
 i: int = 1
 while i < len(sys.argv):
@@ -21,9 +22,10 @@ while i < len(sys.argv):
 		text += sys.argv[i]
 	i += 1
 
-print(f"Information:\n\t - Font: {font}\n\t - Text: \"{text}\"")
+if debugPrint:
+	print(f"Information:\n\t - Font: {font}\n\t - Text: \"{text}\"")
 
-t = Text2font.text2font(text, font)
+t = Text2font.text2font(text, font, debugPrint=debugPrint)
 if not t is None:
 	if format:
 		print (t.replace("0", " "))
