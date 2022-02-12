@@ -17,4 +17,4 @@ awk '{print $0}' $COMMIT_DATE_FILE | while read c; do
 	git commit -m "$COMMIT_MESSAGE" --date="$c" > /dev/null
 done
 
-cd -
+cd - > /dev/null
