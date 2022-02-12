@@ -66,6 +66,6 @@ if __name__ == "__main__":
 
 	for i in fonts:
 		print("\n*****************************")
-		print("Testing font: " + i + " with text: " + text)
+		print(f"Testing font:\n\t - Font \"{i}\"\n\t - Text: \"{text}\"")
 		print (Text2font.text2font(text, i))
 		print("*****************************")
