@@ -100,7 +100,7 @@
 
         const generateJSON = () => {
             const rows = [...document.querySelectorAll("#matrix .row")];
-            let days = rows.map((row) => [...row.children].map(day => day.dataset["intensity"]));
+            let days = rows.map((row) => [...row.children].map(day => day.dataset["intensity"]).join(""));
             days = days.map((value) => (value == null) ? 0 : value);
 
             const json = JSON.stringify(days);
