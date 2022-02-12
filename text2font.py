@@ -31,9 +31,7 @@ class Text2font:
 		file = Text2font.readFile(fileName)
 		jsonObj = json.load(file)
 		file.close()
-
-		print(jsonObj)
-		return None
+		return jsonObj
 
 	@staticmethod
 	def isValidJSON(fileName: str) -> bool:
@@ -55,7 +53,7 @@ class Text2font:
 				file.close()
 				return False
 		# Check details
-		for key in ("name", "maxHeight", "maxWidth"):
+		for key in ("name", "height", "width"):
 			if not key in jsonObj["details"]:
 				print(f"Invalid JSON file: Missing key: {key}")
 				file.close()
@@ -71,12 +69,20 @@ class Text2font:
 	@staticmethod
 	def text2font(text: str, font_path_name: str) -> str:
 		"""
-		
+		Attempts to convert the given text to the representation using the font_file.
+
+		If the font_file is not valid, it returns None.
 		"""
 		font = Text2font.loadJSON(font_path_name)
 		if font is None:
 			return None
-		return font["details"]["name"]
+		print(f"{font['details']['name']} loaded.")
+		str = ["" for i in range(font['details']['height'])]
+		for char in text:
+			f = font['font'][char] if font['font'].get(char) else font['font']['default']
+			for i in range(font['details']['height']):
+				str[i] += f[i]
+		return "\n".join(str)
 
 # If this file is run as a script, execute this as main function.
 if __name__ == "__main__":
@@ -96,5 +102,7 @@ if __name__ == "__main__":
 	for i in fonts:
 		print("\n*****************************")
 		print(f"Testing font:\n\t - Font \"{i}\"\n\t - Text: \"{text}\"")
-		print (Text2font.text2font(text, i))
+		t = Text2font.text2font(text, i)
+		if not t is None:
+			print (t.replace("0", " "))
 		print("*****************************")
