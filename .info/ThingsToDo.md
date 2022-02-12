@@ -2,7 +2,7 @@
 - [ ] Define basic font:
   - [ ] JSON? -> This will enable custom fonts.
   - [ ] Instead of binary options (committed or not), let fonts have intensity variations (more or less commits)
-  - [ ] Create a simple HTML to easily create the JSON for new fonts (already WIP ;) )
+  - [X] Create a simple HTML to easily create the JSON for new fonts
 - [ ] Select language:
   - [ ] Python?
   - [ ] Shell?
