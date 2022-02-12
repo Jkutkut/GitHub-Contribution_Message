@@ -7,7 +7,8 @@
   - [x] Python and Shell for the use of the font
   - [x] Web for the creation of the fonts
 - [ ] Define logic
-- [ ] Create custom files (or a custom README.md) to give credit this Github Repository
+- [x] Create custom files (or a custom README.md) to give credit this Github Repository
+  - [ ] Created [here](./../res/README.md)
 
 
 # Ideas:
