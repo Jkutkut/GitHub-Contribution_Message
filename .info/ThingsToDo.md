@@ -22,5 +22,5 @@
       - [ ] Multiple drawing menus (one for each character)
       - [ ] Able to create a font from scratch (like [this file](./fonts/../../fonts/py_basic_font.json))
       - [ ] Edit/modify fonts (to modify a already created one)?
-  - [ ] Be able to change the intensity of a pixel using the mouse wheel.
+  - [X] Be able to change the intensity of a pixel using the mouse wheel.
   - [ ] Have a copy button next to the generated output to copy to clipboard.
