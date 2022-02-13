@@ -1,7 +1,6 @@
 #!/bin/bash
 
 COMMIT_DATE_FILE="../commits"
-# COMMIT_DATE_FILE="testing/commits"
 REPO="testing/repo/"
 README_NAME="README.md"
 README="res/$README_NAME"
