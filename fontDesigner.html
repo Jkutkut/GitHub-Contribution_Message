@@ -12,10 +12,20 @@
             <h2>Font factory</h2>
             <p>Left click to intensify the color of a day.</p>
             <p>Right click to lower the intensity of a day.</p>
+            <p>Use mouse wheel to change default intensity, or click the intensity you want on the bar below.</p>
             <p>Click 'Generate' to generate the JSON of that symbol.</p><br/>
-            <label>Default intensity: </label> <input id="defaultIntensity" type="number" value="4", min="1", max="4" /><br/>
             <label>Erase gradually?: </label>  <input id="eraseGradually" type="checkbox" checked /> <br/>
-            <label>Change column count: </label> <input type="range" id="slider" value="25" min="1" max="52" step="1" /> <b id="columnCount">25</b>
+            <label>Change column count: </label> <input type="range" id="slider" value="25" min="1" max="52" step="1" /> <b id="columnCount">25</b><br /><br />
+            <div class="button" id="clearMatrix">Clear Matrix</div>
+            <div id="intensitySelector">
+                <label>Intensity: </label>
+                <div class="intensityBar">
+                    <div class="intensity selected" data-intensity="1"></div>
+                    <div class="intensity" data-intensity="2"></div>
+                    <div class="intensity" data-intensity="3"></div>
+                    <div class="intensity" data-intensity="4"></div>
+                </div>
+            </div>
         </div>
         <div id="matrix"></div>
         <div id="output">
@@ -28,6 +38,50 @@
     </main>
     <script>
         var COL_COUNT = 25;
+        var IS_MOUSE_DOWN = false;
+        var IS_RIGHT_CLICK = false;
+        var DEFAULT_INTENSITY = 4;
+
+        document.onmousedown = () => { IS_MOUSE_DOWN = true; if (event.path[0].classList.contains("day")) handleDayClick(event, true)}
+        document.onmouseup = () => { IS_MOUSE_DOWN = false; IS_RIGHT_CLICK = false; }
+        document.oncontextmenu = (event) => { IS_RIGHT_CLICK = true; if (!event.ctrlKey) event.preventDefault(); }
+
+        const clearMatrix = () => {
+            let days = [...document.querySelectorAll("#matrix div.day")];
+            days.map((day) => day.dataset["intensity"] = 0);
+        }
+        document.querySelector("#clearMatrix").addEventListener("click", clearMatrix);
+
+        var LAST_SCROLL_POSITION = 0;
+        var LET_SCROLL_AGAIN = true;
+        window.screenTop = 0;
+        window.screenY = 0;
+        window.scrollTo(0, LAST_SCROLL_POSITION);
+        window.addEventListener("scroll", (event) => {
+            if (!LET_SCROLL_AGAIN)
+            {
+                event.preventDefault();
+                window.screenTop = LAST_SCROLL_POSITION;
+                window.screenY = LAST_SCROLL_POSITION;
+                window.scrollTo(0, LAST_SCROLL_POSITION);
+            }
+            else {
+                let currentSelection = document.querySelector("#intensitySelector div.intensityBar > div.selected");
+                currentSelection.classList.remove("selected");
+                
+                let currentIntensity = parseInt(currentSelection.dataset["intensity"]);
+                let nextIntensity = (window.scrollY > LAST_SCROLL_POSITION) ? (currentIntensity < 4) ? currentIntensity + 1 : 4 : (currentIntensity > 1) ? currentIntensity - 1 : 1;
+                
+                document.querySelector("#intensitySelector div.intensityBar > div[data-intensity='"+ (nextIntensity) +"'").classList.add("selected");
+                
+                DEFAULT_INTENSITY = nextIntensity;
+                LET_SCROLL_AGAIN = false;
+                window.setTimeout(() => {
+                    LET_SCROLL_AGAIN = true;
+                }, 300);
+            }
+            LAST_SCROLL_POSITION = window.scrollY;
+        });
 
         const updateColumnCount = (event) =>
         {
@@ -42,15 +96,16 @@
                         let day = document.createElement("div");
                         day.classList.add("day");
                         day.dataset["intensity"] = 0;
-                        day.addEventListener("click", addDayColor);
-                        day.addEventListener("contextmenu", reduceDayColor);
+                        day.addEventListener("mouseenter", handleDayClick);
+                        day.addEventListener("click", handleDayClick);
+                        day.addEventListener("contextmenu", handleDayClick);
                         rows[i].appendChild(day);
                     }
                 }
                 else if (newValue < COL_COUNT)
                 {
                     while (rows[i].children.length != newValue)
-                        console.log(rows[i].lastChild.remove());
+                        rows[i].lastChild.remove();
                 }
             }
             COL_COUNT = newValue;
@@ -59,25 +114,32 @@
         }
         document.querySelector("#slider").addEventListener("input", updateColumnCount);
 
-        const addDayColor = (event) => {
-            let day = event.target;
+        const addDayColor = (day) => {
             let intensity = parseInt(day.dataset["intensity"]);
-            console.log(day, intensity);
             if (intensity == 0)
-                day.dataset["intensity"] = parseInt(document.querySelector("#defaultIntensity").value);
+                day.dataset["intensity"] = DEFAULT_INTENSITY;
             else
                 day.dataset["intensity"] = (intensity < 4) ? intensity + 1 : 4;
         }
 
-        const reduceDayColor = (event) => {
+        const reduceDayColor = (day) => {
             event.preventDefault();
-            console.log(event);
-            let day = event.target;
             let intensity = parseInt(day.dataset["intensity"]);
             if (!document.querySelector("#eraseGradually").checked)
                 day.dataset["intensity"] = 0;
             else
                 day.dataset["intensity"] = (intensity > 0) ? intensity - 1 : 0;
+        }
+
+        const handleDayClick = (event, isPath = false) => {
+            let element = (isPath) ? event.path[0] : false;
+            if (IS_MOUSE_DOWN)
+            {
+                if (IS_RIGHT_CLICK)
+                    reduceDayColor(element || event.target);
+                else
+                    addDayColor(element || event.target);
+            }
         }
 
         const matrix = document.querySelector("#matrix");
@@ -90,8 +152,9 @@
                 let day = document.createElement("div");
                 day.classList.add("day");
                 day.dataset["intensity"] = 0;
-                day.addEventListener("click", addDayColor);
-                day.addEventListener("contextmenu", reduceDayColor);
+                day.addEventListener("mouseenter", handleDayClick);
+                day.addEventListener("click", handleDayClick);
+                day.addEventListener("contextmenu", handleDayClick);
                 row.appendChild(day);
             }
             matrix.appendChild(row);
@@ -116,13 +179,12 @@
             user-select: none;
             margin: 0 12%;
             --col-count: 25;
+            height: 120vh;
         }
 
         main {
-            /*position: absolute;
-            left: 50%;
-            transform: translateX(-50%);*/
             margin-top: 50px;
+            position: fixed;
         }
 
         main #mainInfo p
@@ -153,6 +215,16 @@
             cursor: pointer;
         }
 
+        .day:before {
+            content: '';
+            display: block;
+            position: relative;
+            top: -3px;
+            left: -3px;
+            width: 21px;
+            height: 21px;
+        }
+
         #output .info {
             display: flex;
             justify-content: space-between;
@@ -165,22 +237,42 @@
             transform: translateY(-3px);
         }
 
-        /*#output */div.button {
+        div.button {
             font-size: 16px;
             outline: none;
             border: none;
             padding: 10px 15px;
-            background: #1F6FEB;
             border-radius: 10px;
             color: #C9D1D9;
+            display: inline-block;
+        }
+        
+        #output div.button {
+            background: #1F6FEB;
             position: absolute;
             right: 0px;
+        }
+
+        #mainInfo div.button {
+            color: #CA453C;
+            border: 1px solid #363B42;
+            font-weight: bold;
+            background: #21262D;
+            padding: 5px 15px;
         }
 
         #output div.button:hover {
             opacity: .65;
             cursor: pointer;
             transition: opacity .5s ease;
+        }
+
+        #mainInfo div.button:hover {
+            background: #CA453C;
+            border-color: #CA453C;
+            color: #C9D1D9;
+            cursor: pointer;
+            transition: background .5s ease, color .5s ease, border-color .5s ease;
         }
 
         #output .textarea:empty {
@@ -198,7 +290,7 @@
             transform: translateX(-50%);
             font-family: monospace;
             font-size: 10px;
-            overflow: scroll;
+            word-break: break-all;
             user-select: all;
         }
 
@@ -210,6 +302,41 @@
 
         #slider {
             width: 250px;
+        }
+
+        #intensitySelector {
+            display: inline-block;
+            margin: 0 50px;
+        }
+
+        #intensitySelector div.intensityBar {
+            width: 350px;
+            height: 15px;
+            background: linear-gradient(89.99deg, #161B22 0%, #0E4429 20%, #006D32 40%, #26A641 60%, #39D353 80%, #7FF493 100%);
+            display: inline-block;
+            margin: 0 15px;
+            transform: translateY(2px);
+            border-radius: 3px;
+            position: relative;
+        }
+
+        #intensitySelector .intensityBar > div {
+            width: 19px;
+            height: 19px;
+            border-radius: 5px;
+            border: 2px solid white;
+            position: absolute;
+            top: -3px;
+        }
+
+        #intensitySelector .intensityBar > div:nth-child(1) { left: 18%; background: #0E4429; }
+        #intensitySelector .intensityBar > div:nth-child(2) { left: 38%; background: #006D32; }
+        #intensitySelector .intensityBar > div:nth-child(3) { left: 58%; background: #26A641; }
+        #intensitySelector .intensityBar > div:nth-child(4) { left: 78%; background: #39D353; }
+
+        #intensitySelector .intensityBar > div.selected {
+            border: 2px solid #D22A2A;
+            box-shadow: #D22A2A 0px 0px 5px;
         }
     </style>
 </body>
