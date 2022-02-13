@@ -38,7 +38,8 @@ for c in range(len(data[0])):
 		if not data[r][c] == " ":
 			for commit in range(int(data[r][c])):
 				# Sat Feb 12 18:18:41 2022 +0100
-				d = firstSunday + timedelta(days=((r + 1) % 7) + c * 7)
+				d = firstSunday + timedelta(days=(r) + c * 7)
+				# d = firstSunday + timedelta(days=((r + 1) % 7) + c * 7)
 				print(f"{d.strftime('%a %b %d %H:%M:%S %Y +0100')}")
 	# 	print(data[r][c], end="")
 	# print()
