@@ -84,7 +84,7 @@ class Text2font:
 		for char in text:
 			f = font['font'][char] if font['font'].get(char) else font['font']['default']
 			for i in range(font['details']['height']):
-				str[i] += f[i]
+				str[i] += f[i] + " "
 		return "\n".join(str)
 
 # If this file is run as a script, execute this as main function.
