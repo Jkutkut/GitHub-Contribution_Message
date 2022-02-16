@@ -7,7 +7,7 @@ if not __name__ == '__main__':
 from scripts.text2font import *
 
 text: str = ""
-font: str = "./fonts/py_basic_font.json"
+font: str = "./fonts/dot_matrix_font.json"
 format: bool = True
 debugPrint: bool = False
 
