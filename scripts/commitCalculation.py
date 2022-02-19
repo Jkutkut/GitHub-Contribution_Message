@@ -42,4 +42,7 @@ for c in range(len(data[0])):
 				d = firstSunday + timedelta(days=(r) + c * 7)
 				# print(f"{d.strftime('%a %b %d %H:%M:%S %Y +0100')}")
 				dates.append(f"{d.strftime('%a %b %d %H:%M:%S %Y +0100')}")
-	
+
+# Store the dates in a file
+with open("dates", "w") as f:
+	f.write("\n".join(dates))
