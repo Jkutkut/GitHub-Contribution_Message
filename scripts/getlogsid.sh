@@ -1,10 +1,25 @@
 #!/bin/bash
 
-repo="testing/repo"
+getCommitsIds() {
+	repo=$1
+	echo "Getting commits ids from $repo"
+	cd $repo ||
+	{
+		echo "Error: $repo does not exist"
+		return 1
+	}
+	if [ ! -d .git ]; then
+		echo "Error: $repo is not a git repository"
+		cd - > /dev/null
+		return 1
+	fi
+	git log --pretty=format:"%H" | cat
+	cd - > /dev/null
+}
 
-cd $repo
+main() {
+	repo="testing/repo"
 
-# get all commits ids
-git log --pretty=format:"%H" > ../all_commits.txt
-
-cd - > /dev/null
+	getCommitsIds $repo
+}
+main
