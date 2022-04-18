@@ -1,6 +1,6 @@
 #!/bin/bash
 
-getCommitsIds() {
+export getCommitsIds() {
 	repo=$1
 	echo "Getting commits ids from $repo"
 	cd $repo ||
@@ -17,9 +17,9 @@ getCommitsIds() {
 	cd - > /dev/null
 }
 
-main() {
-	repo="testing/repo"
+# main() {
+# 	repo="testing/repo"
 
-	getCommitsIds $repo
-}
-main
+# 	getCommitsIds $repo
+# }
+# main
